@@ -65,22 +65,16 @@ void AsyncElegantOtaClass::begin(AsyncWebServer *server, const char* username, c
         }
 
         if (!index) {
-            if(!request->hasParam("MD5", true)) {
-                return request->send(400, "text/plain", "MD5 parameter missing");
-            }
-
-            if(!Update.setMD5(request->getParam("MD5", true)->value().c_str())) {
-                return request->send(400, "text/plain", "MD5 parameter invalid");
-            }
-
             #if defined(ESP8266)
-                int cmd = (filename == "filesystem") ? U_FS : U_FLASH;
+                //int cmd = (name == "filesystem") ? U_FS : U_FLASH;
+                int cmd = U_FLASH;
                 Update.runAsync(true);
                 size_t fsSize = ((size_t) &_FS_end - (size_t) &_FS_start);
                 uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
                 if (!Update.begin((cmd == U_FS)?fsSize:maxSketchSpace, cmd)){ // Start with max available size
             #elif defined(ESP32)
-                int cmd = (filename == "filesystem") ? U_SPIFFS : U_FLASH;
+                //int cmd = (name == "filesystem") ? U_SPIFFS : U_FLASH;
+                int cmd = U_FLASH;
                 if (!Update.begin(UPDATE_SIZE_UNKNOWN, cmd)) { // Start with max available size
             #endif
                 Update.printError(Serial);
